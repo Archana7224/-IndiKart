@@ -23,3 +23,8 @@ a.active hr{
         color: white;
     }
   }
+
+body.dark-mode {
+    background-color: #111;
+    color: #fff;
+  }

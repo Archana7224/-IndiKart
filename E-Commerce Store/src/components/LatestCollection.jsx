@@ -22,23 +22,23 @@ const LatestCollection = () => {
           Discover the freshest arrivals and trending styles curated just for you. Our latest collection showcases an exquisite blend of innovation and timeless elegance.
         </p>
       </div>
-
-      Rendering Products
+    
+      {/* Rendering Products */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
         {latestProducts.length > 0 ? (
           latestProducts.map((item, index) => (
             <ProductItem
               key={item.id || index}
               id={item.id}
-              img={item.image}
+              image={item.image} 
               name={item.name}
               price={item.price}
             />
           ))
         ) : (
           <p className="text-center text-gray-600">
-  We’re currently updating our latest collection. Check back soon!
-</p>
+            We’re currently updating our latest collection. Check back soon!
+          </p>
         )}
       </div>
     </div>
