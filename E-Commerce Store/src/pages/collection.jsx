@@ -3,24 +3,27 @@ import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
+import { useNavigate } from 'react-router-dom';
 
 const Collection = () => {
-  const { products } = useContext(ShopContext);
+  const { products, search, showSearch, setSearch } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [sortBy, setSortBy] = useState('relevant');
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   // Effect to load initial products
   useEffect(() => {
     setFilteredProducts(products);
   }, [products]);
 
-  // Effect to apply filters and sorting
+  // Effect to apply filters, search, and sorting
   useEffect(() => {
     applyFiltersAndSorting();
-  }, [category, subCategory, sortBy]);
+  }, [category, subCategory, sortBy, searchTerm]);
 
   // Handle category toggle
   const toggleCategory = (e) => {
@@ -56,6 +59,13 @@ const Collection = () => {
       );
     }
 
+    // Filter by search term
+    if (searchTerm.trim() !== '') {
+      updatedProducts = updatedProducts.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
     // Sort products
     if (sortBy === 'low-high') {
       updatedProducts.sort((a, b) => a.price - b.price);
@@ -69,6 +79,17 @@ const Collection = () => {
   // Handle sorting option change
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
+  };
+
+  // Handle search input
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSearch(e.target.value); // Update the global context search value
+  };
+
+  // Navigate to product details
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
   };
 
   return (
@@ -160,28 +181,38 @@ const Collection = () => {
 
       {/* Right Side */}
       <div className="flex-1">
-        <div className="flex justify-between text-base sm:text-2xl mb-4">
+        <div className="flex justify-between items-center text-base sm:text-2xl mb-4">
           <Title text1={'ALL '} text2={' COLLECTIONS'} />
-          {/* Product Sort */}
-          <select
-            className="border-2 border-gray-300 text-sm px-2"
-            value={sortBy}
-            onChange={handleSortChange}
-          >
-            <option value="relevant">Sort by: Relevant</option>
-            <option value="low-high">Sort by: Low to High</option>
-            <option value="high-low">Sort by: High to Low</option>
-          </select>
+          {/* Product Sort and Search */}
+          <div className="flex gap-4">
+            <input
+              type="text"
+              className="border border-gray-300 text-sm px-2 py-1"
+              placeholder="Search products"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <select
+              className="border-2 border-gray-300 text-sm px-2"
+              value={sortBy}
+              onChange={handleSortChange}
+            >
+              <option value="relevant">Sort by: Relevant</option>
+              <option value="low-high">Sort by: Low to High</option>
+              <option value="high-low">Sort by: High to Low</option>
+            </select>
+          </div>
         </div>
         {/* Map Products */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filteredProducts.map((item, index) => (
+          {filteredProducts.map((item) => (
             <ProductItem
-              key={index}
+              key={item.id}
               name={item.name}
               id={item.id}
               price={item.price}
               image={item.image}
+              onClick={() => handleProductClick(item.id)}
             />
           ))}
         </div>
